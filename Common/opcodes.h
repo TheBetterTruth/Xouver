@@ -1,5 +1,5 @@
-#ifndef INSTRUCTIONS_H
-#define INSTRUCTIONS_H
+#ifndef OP_CODES_H
+#define OP_CODES_H
 
 #define OP_ADD				(unsigned char) 1
 #define OP_SUB				(unsigned char) 2
@@ -34,8 +34,11 @@
 
 #define OP_LINE				(unsigned char) 29
 
-#ifdef _DEBUG
-#define OP_OUT				(unsigned char) 30
-#endif
+#define OP_NEWA				(unsigned char) 30
+#define OP_ASTORE			(unsigned char) 31
+#define OP_ALOAD			(unsigned char) 32
+#define OP_APPA				(unsigned char) 33
+#define OP_ARRLEN			(unsigned char) 34
 
+#define OP_PUSHC			(unsigned char) 35
 #endif

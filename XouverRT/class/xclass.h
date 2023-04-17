@@ -7,14 +7,14 @@
 
 #include "value/xvalue.h"
 
-class xclass {
+class xClass {
 public:
 	void* rt;
 
 	int classOffset;
 	std::string fullName;
 
-	std::vector<xvalue> pool;
+	std::vector<xValue> pool;
 	int poolSize;
 
 	int functionsSize;
@@ -23,6 +23,8 @@ public:
 	int funcsOffset;
 
 	int scopeSize;
+
+	xValue classObj;
 };
 
 #endif

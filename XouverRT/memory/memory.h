@@ -7,12 +7,12 @@
 
 typedef struct S_MEMBLOCK_T {
 	void* ptr;
-} memblock;
+} MemBlock;
 
-class memorymanager {
+class MemoryManager {
  private:
-	using Memory = std::vector<object>;
-	void* rt;
+	using Memory = std::vector<Object>;
+	const void* rt;
 	Memory youngA{};
 	Memory youngB{};
 	Memory oldA{};
@@ -26,9 +26,9 @@ class memorymanager {
 	Memory& getYoung();
 
  public:
-	memorymanager(void* rt);
-	object& allocate();
-	~memorymanager();
+	MemoryManager(const void* rt);
+	Object& allocate(const xClass& classObj);
+	~MemoryManager();
 };
 
 #endif

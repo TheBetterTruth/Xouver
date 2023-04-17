@@ -21,27 +21,27 @@
 #define _xcdecl __cdecl
 #endif
 
-class runtime {
+class Runtime {
  private:
-	using Stack = std::vector<xvalue>;
+	using Stack = std::vector<xValue>;
 	XRT_Error currentError;
 
-	memorymanager memManager;
-	classmanager classManager;
+	MemoryManager memManager;
+	ClassManager classManager;
 
 	bool _isHalted;
-	xclass* currentClass;
+	xClass* currentClass;
 
 	std::stack<int> ptrs;
 	std::vector<std::string> functionCallVector;
-	std::stack<xclass*> classes;
+	std::stack<xClass*> classes;
 	std::stack<Stack> localScopes;
 	std::stack<int> lines;
 
 	std::map<std::string, void(_xcdecl*)(void*)> nativeFunctions;
 
-	function_map functionmap;
-	class_map classmap;
+	FunctionMap functionmap;
+	ClassMap classmap;
 
 	std::string exception;
 
@@ -49,9 +49,9 @@ class runtime {
 	int funcOffset;
 	unsigned char* bytes;
 
-	runtime();
-	~runtime();
-	void run(xclass* mainClass, std::string func);
+	Runtime();
+	~Runtime();
+	void run(xClass& mainClass, std::string func);
 
 	XRT_Error getError();
 	void setError(XRT_Error);
@@ -59,19 +59,19 @@ class runtime {
 	std::string getException();
 
 	void putNativeFunction(std::string signature, void (*fn)(void*));
-	void setClass(xclass* c);
+	void setClass(xClass& c);
 	void callFunction(int id);
 	void halt();
 	std::string createCallStack();
 	std::string createExceptionMessage(std::string msg);
 	void throwError(std::string msg);
 
-	classmanager* getClassManager();
-	memorymanager& getMemoryManager();
-	function_map* getFunctionMap();
-	xvalue& getStackTop();
-	void stackPush(xvalue v);
-	xvalue stackPop();
+	ClassManager& getClassManager();
+	MemoryManager& getMemoryManager();
+	FunctionMap& getFunctionMap();
+	xValue& getStackTop();
+	void stackPush(xValue v);
+	xValue stackPop();
 	Stack& stack();
 	std::stack<Stack>& fullStack();
 

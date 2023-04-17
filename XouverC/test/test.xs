@@ -1,0 +1,1 @@
+def func void Main() 4 + 8

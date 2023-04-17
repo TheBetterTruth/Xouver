@@ -9,12 +9,13 @@
 #define BYTE_INT(bytes, pos)		(bytes[*pos] << 24) | (bytes[*pos + 1] << 16) | (bytes[*pos + 2] << 8) | (bytes[*pos + 3]); *pos += 4;
 
 int main(int argc, char** argv) {
-	if (argc < 2) {
+	/*if (argc < 2) {
 		std::cout << "Usage: " << argv[0] << " application.xvr" << std::endl;
 		return 1;
-	}
-	FILE* file = fopen(argv[1], "rb");
+	}*/
+	//FILE* file = fopen(argv[1], "rb");
 
+	FILE* file = fopen("test.xvr", "rb");
 	if (file == NULL) throw std::exception();
 
 	fseek(file, 0L, SEEK_END);
@@ -42,7 +43,7 @@ int main(int argc, char** argv) {
 		std::cout << "Error: " << resolveXNIError(err);
 		return -1;
 	}
-	runRuntime(rt, "Test", "xouver:Main()#void");
+	runRuntime(rt, "Xouver.Test", "void Xouver.Test:Main()");
 
 	/*if (getXrtError(rt)) {
 		int size = getExpceptionMessageSize(rt);

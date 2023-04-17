@@ -32,6 +32,12 @@ extern "C" {
 	struct _xobject {};
 	typedef _xobject* xobject;
 
+	typedef xobject xarray;
+	typedef xarray xintarray;
+	typedef xarray xfloatarray;
+	typedef xarray xboolarray;
+	typedef xarray xchararray;
+
 	typedef union _xvalues {
 		xint i;
 		xfloat f;
@@ -70,7 +76,6 @@ extern "C" {
 		xvalues returnValue;
 	};
 
-//#ifdef XRT {
 	void* createRuntime(XNI_Error* error, unsigned char* bytes, int bytesCount);
 	void freeRuntime(void* _rt);
 	XNI_Error createClass(void* _rt, unsigned char* bytes, int bytesCount);
@@ -88,6 +93,6 @@ extern "C" {
 	void getExceptionMessage(void* _rt, char** outMsg);
 
 #ifdef __cplusplus
-}
+	}
 #endif
 #endif

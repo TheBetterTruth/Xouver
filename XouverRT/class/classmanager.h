@@ -6,14 +6,14 @@
 
 #include "xclass.h"
 
-class classmanager {
+class ClassManager {
  private:
-	std::vector<xclass> classes;
+	std::vector<xClass> classes;
 
  public:
-	void putClass(xclass c);
-	xclass* getClass(int index);
-	xclass* getClass(std::string path);
+	void putClass(xClass c);
+	xClass& getClass(int index);
+	xClass& getClass(std::string path);
 };
 
 #endif

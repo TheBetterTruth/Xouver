@@ -5,9 +5,14 @@
 #include <class/xclass.h>
 #include <string>
 
-struct object : _xobject {
-	xclass* classObj;
-	xvalue* obj;
+struct Object : _xobject {
+	const xClass& classObj;
+	xValue* obj;
+	
+	Object(const xClass& classObj, xValue* obj) : classObj(classObj), obj(obj) {}
+	~Object() {
+		delete[] obj;
+	}
 };
 
 #endif

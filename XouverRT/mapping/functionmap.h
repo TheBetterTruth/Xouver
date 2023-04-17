@@ -5,17 +5,17 @@
 #include <vector>
 
 
-typedef struct s_functioninfo {
+struct FunctionInfo {
 	int pointer;
 	std::string signature;
-} functioninfo;
+};
 
-class function_map {
+class FunctionMap {
 private:
-	std::vector<functioninfo> functions;
+	std::vector<FunctionInfo> functions;
 public:
-	functioninfo& getFunction(int index);
-	void putFunction(functioninfo info);
+	FunctionInfo& getFunction(int index);
+	void putFunction(FunctionInfo info);
 };
 
 #endif

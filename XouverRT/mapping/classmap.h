@@ -3,17 +3,17 @@
 
 #include <vector>
 
-typedef struct s_classinfo {
+struct ClassInfo {
 	char* signature;
 	int pointer;
-} classinfo;
+};
 
-class class_map {
+class ClassMap {
 private:
-	std::vector<classinfo> classes;
+	std::vector<ClassInfo> classes;
 public:
-	classinfo& getClass(int index);
-	void putClass(classinfo info);
+	ClassInfo& getClass(int index);
+	void putClass(ClassInfo info);
 };
 
 #endif

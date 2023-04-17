@@ -2,10 +2,10 @@
 
 #include <memory/memory.h>
 
-classinfo& class_map::getClass(int index) {
+ClassInfo& ClassMap::getClass(int index) {
 	return classes[index];
 }
 
-void class_map::putClass(classinfo info) {
+void ClassMap::putClass(ClassInfo info) {
 	classes.push_back(info);
 }

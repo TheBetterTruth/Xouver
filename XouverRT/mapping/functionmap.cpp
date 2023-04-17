@@ -2,10 +2,10 @@
 
 #include <memory/memory.h>
 
-functioninfo& function_map::getFunction(int index) {
+FunctionInfo& FunctionMap::getFunction(int index) {
 	return functions[index];
 }
 
-void function_map::putFunction(functioninfo info) {
+void FunctionMap::putFunction(FunctionInfo info) {
 	functions.push_back(info);
 }

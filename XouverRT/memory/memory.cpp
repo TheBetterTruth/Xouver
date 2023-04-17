@@ -10,23 +10,23 @@
 static const std::size_t slabSize = 1 << 19;
 static const std::size_t youngGenerationSize = 16;
 
-memorymanager::memorymanager(void* rt) {
+MemoryManager::MemoryManager(const void* rt) {
 	this->rt = rt;
 }
 
-object& memorymanager::allocate() {
+Object& MemoryManager::allocate(const xClass& classObj) {
 	auto& memory = getYoung();
 	if (memory.size() == youngGenerationSize) {
-		auto rt = (runtime*)this->rt;
+		auto rt = (Runtime*)this->rt;
 		rt->fullStack();
 		/* GC */
 	}
-	memory.push_back({});	 // TODO: Object creation
+	memory.push_back({ classObj, new xValue[classObj.scopeSize]});	 // TODO: Object creation
 	return memory[memory.size() - 1];
 }
 
-memorymanager::~memorymanager() {}
+MemoryManager::~MemoryManager() {}
 
-memorymanager::Memory& memorymanager::getYoung() {
+MemoryManager::Memory& MemoryManager::getYoung() {
 	return isYoungA ? youngA : youngB;
 }

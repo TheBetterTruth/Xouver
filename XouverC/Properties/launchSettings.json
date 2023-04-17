@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "XouverC": {
-      "commandName": "Project",
-      "commandLineArgs": "Math.xs Test.xs"
-    }
-  }
-}

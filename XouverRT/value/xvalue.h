@@ -2,25 +2,25 @@
 #define XVALUE_H
 
 #include <XNI.h>
-#include "valuetype.h"
+#include "ValueType.h"
 
-struct xvalue {
-	valuetype type;
+struct xValue {
+	ValueType type;
 	xvalues value;
 
-	bool operator == (xvalue v) {
+	bool operator == (xValue v) {
 		xvalues val = v.value;
 
 		if (v.type == this->type) {
-			if (this->type == valuetype::FLOAT)
+			if (this->type == ValueType::FLOAT)
 				return (val.f == value.f);
-			else if (this->type == valuetype::INT)
+			else if (this->type == ValueType::INT)
 				return (val.i == value.i);
-			else if (this->type == valuetype::BOOL)
+			else if (this->type == ValueType::BOOL)
 				return (val.b == value.b);
-			else if (this->type == valuetype::CHAR)
+			else if (this->type == ValueType::CHAR)
 				return (val.c == value.c);
-			else if (this->type == valuetype::OBJECT)
+			else if (this->type == ValueType::OBJECT)
 				return (val.o == value.o);
 			else
 				return false;

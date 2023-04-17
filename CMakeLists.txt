@@ -9,4 +9,4 @@ project ("Xouver")
 # Schließen Sie Unterprojekte ein.
 add_subdirectory ("XouverRT")
 add_subdirectory ("XouverKit")
-#add_subdirectory ("NewFolder")
+add_subdirectory ("XouverC")

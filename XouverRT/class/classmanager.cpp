@@ -1,20 +1,18 @@
 #include "classmanager.h"
-
+#include "xclass.h"
 #include <string>
 
-xclass* classmanager::getClass(int index) {
-	return &classes[index];
+xClass& ClassManager::getClass(int index) {
+	return classes[index];
 }
 
-xclass* classmanager::getClass(std::string path) {
+xClass& ClassManager::getClass(std::string path) {
 	for (auto &it : classes) {
 		if (it.fullName == path)
-			return &it;
+			return it;
 	}
-
-	return nullptr;
 }
 
-void classmanager::putClass(xclass c) {
+void ClassManager::putClass(xClass c) {
 	classes.push_back(c);
 }

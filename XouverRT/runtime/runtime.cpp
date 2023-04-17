@@ -1,34 +1,31 @@
-#include "runtime.h"
+#include "Runtime.h"
 
 #include <XNI.h>
 #include <iostream>
 #include <string>
-
 #include <memory/memory.h>
-
 #include <common.h>
-#include <object/object.h>
-
+#include <Object/Object.h>
 #include <opcodes.h>
-
 #include <logging.h>
+
 
 #define BYTES_END (unsigned char)0x94
 
 #define MAP_BEGIN (unsigned char)0x74
 #define POOL_BEGIN (unsigned char)0x33
 
-runtime::runtime() : memManager{this} {}
+Runtime::Runtime() : memManager{this} {}
 
-function_map* runtime::getFunctionMap() {
-	return &functionmap;
+FunctionMap& Runtime::getFunctionMap() {
+	return functionmap;
 }
 
-runtime::~runtime() {
+Runtime::~Runtime() {
 	delete[] this->bytes;
 }
 
-void runtime::run(xclass* mainClass, std::string func) {
+void Runtime::run(xClass& mainClass, std::string func) {
 	_isHalted = false;
 	setClass(mainClass);
 	callFunction(0);
@@ -38,25 +35,25 @@ void runtime::run(xclass* mainClass, std::string func) {
 		debugPrint("Stack size: #\n", stack().size());
 		switch (inst) {
 			case OP_ADD: {
-				xvalue val2 = stackPop();
-				xvalue val1 = stackPop();
+				xValue val2 = stackPop();
+				xValue val1 = stackPop();
 
 				debugPrint("INT: # + #\n", val1.value.i, val2.value.i);
 				debugPrint("FLOAT: # + #\n", val1.value.f, val2.value.f);
 				switch (val1.type) {
-					case valuetype::FLOAT: {
+					case ValueType::FLOAT: {
 						float v1 = val1.value.f;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.f = v1 + val2.value.f;
-								v.type = valuetype::FLOAT;
+								v.type = ValueType::FLOAT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 + val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -64,19 +61,19 @@ void runtime::run(xclass* mainClass, std::string func) {
 						}
 						break;
 					}
-					case valuetype::INT: {
+					case ValueType::INT: {
 						int v1 = val1.value.i;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.i = v1 + val2.value.f;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 + val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -90,23 +87,23 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_SUB: {
-				xvalue val2 = stackPop();
-				xvalue val1 = stackPop();
+				xValue val2 = stackPop();
+				xValue val1 = stackPop();
 
 				switch (val1.type) {
-					case valuetype::FLOAT: {
+					case ValueType::FLOAT: {
 						float v1 = val1.value.f;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.f = v1 - val2.value.f;
-								v.type = valuetype::FLOAT;
+								v.type = ValueType::FLOAT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.f = v1 - val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -114,19 +111,19 @@ void runtime::run(xclass* mainClass, std::string func) {
 						}
 						break;
 					}
-					case valuetype::INT: {
+					case ValueType::INT: {
 						int v1 = val1.value.i;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.i = v1 - val2.value.f;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 - val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -140,23 +137,23 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_MUL: {
-				xvalue val2 = stackPop();
-				xvalue val1 = stackPop();
+				xValue val2 = stackPop();
+				xValue val1 = stackPop();
 
 				switch (val1.type) {
-					case valuetype::FLOAT: {
+					case ValueType::FLOAT: {
 						float v1 = val1.value.f;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.f = v1 * val2.value.f;
-								v.type = valuetype::FLOAT;
+								v.type = ValueType::FLOAT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 * val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -164,19 +161,19 @@ void runtime::run(xclass* mainClass, std::string func) {
 						}
 						break;
 					}
-					case valuetype::INT: {
+					case ValueType::INT: {
 						int v1 = val1.value.i;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.i = v1 * val2.value.f;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 * val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -190,23 +187,23 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_DIV: {
-				xvalue val2 = stackPop();
-				xvalue val1 = stackPop();
+				xValue val2 = stackPop();
+				xValue val1 = stackPop();
 
 				switch (val1.type) {
-					case valuetype::FLOAT: {
+					case ValueType::FLOAT: {
 						float v1 = val1.value.f;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.f = v1 / val2.value.f;
-								v.type = valuetype::FLOAT;
+								v.type = ValueType::FLOAT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 / val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -214,19 +211,19 @@ void runtime::run(xclass* mainClass, std::string func) {
 						}
 						break;
 					}
-					case valuetype::INT: {
+					case ValueType::INT: {
 						int v1 = val1.value.i;
-						xvalue v{};
+						xValue v{};
 
 						switch (val2.type) {
-							case valuetype::FLOAT:
+							case ValueType::FLOAT:
 								v.value.i = v1 / val2.value.f;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
-							case valuetype::INT:
+							case ValueType::INT:
 								v.value.i = v1 / val2.value.i;
-								v.type = valuetype::INT;
+								v.type = ValueType::INT;
 								stackPush(v);
 								break;
 							default:
@@ -242,11 +239,11 @@ void runtime::run(xclass* mainClass, std::string func) {
 			case OP_CLOAD: {
 				int pos = ptrs.top();
 				int constPos = getArg();
-				xvalue v = currentClass->pool[constPos];
+				xValue v = currentClass->pool[constPos];
 
-				if (v.type == valuetype::INT)
+				if (v.type == ValueType::INT)
 					debugPrint("CLOAD # from # on #\n", v.value.i, constPos, pos);
-				else if (v.type == valuetype::FLOAT)
+				else if (v.type == ValueType::FLOAT)
 					debugPrint("CLOAD # from # on #\n", v.value.f, constPos, pos);
 
 				stackPush(v);
@@ -281,27 +278,27 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_IFEQ: {
-				xvalue rval = stackPop();
-				xvalue lval = stackPop();
+				xValue rval = stackPop();
+				xValue lval = stackPop();
 
-				xvalue v{};
-				v.type = valuetype::BOOL;
+				xValue v{};
+				v.type = ValueType::BOOL;
 				if (rval.type == lval.type) {
 					switch (lval.type) {
-						case valuetype::INT:
+						case ValueType::INT:
 							v.value.b = lval.value.i == rval.value.i;
 							// std::cout << v->value.b << "\n";
 							break;
-						case valuetype::FLOAT:
+						case ValueType::FLOAT:
 							v.value.b = lval.value.f == rval.value.f;
 							break;
-						case valuetype::BOOL:
+						case ValueType::BOOL:
 							v.value.b = lval.value.b == rval.value.b;
 							break;
-						case valuetype::CHAR:
+						case ValueType::CHAR:
 							v.value.b = lval.value.c == rval.value.c;
 							break;
-						case valuetype::OBJECT:
+						case ValueType::OBJECT:
 							v.value.b = lval.value.c == rval.value.c;
 							break;
 						default:
@@ -315,18 +312,18 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_IFGT: {
-				xvalue rval = stackPop();
-				xvalue lval = stackPop();
+				xValue rval = stackPop();
+				xValue lval = stackPop();
 				debugPrint("# > #\n", lval.value.i, rval.value.i);
 
-				xvalue v{};
-				v.type = valuetype::BOOL;
+				xValue v{};
+				v.type = ValueType::BOOL;
 				if (rval.type == lval.type) {
 					switch (lval.type) {
-						case valuetype::INT:
+						case ValueType::INT:
 							v.value.b = lval.value.i > rval.value.i;
 							break;
-						case valuetype::FLOAT:
+						case ValueType::FLOAT:
 							v.value.b = lval.value.f > rval.value.f;
 							break;
 						default:
@@ -340,18 +337,18 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_IFGQ: {
-				xvalue rval = stackPop();
-				xvalue lval = stackPop();
+				xValue rval = stackPop();
+				xValue lval = stackPop();
 				debugPrint("# >= #\n", lval.value.i, rval.value.i);
 
-				xvalue v = xvalue();
-				v.type = valuetype::BOOL;
+				xValue v = xValue();
+				v.type = ValueType::BOOL;
 				if (rval.type == lval.type) {
 					switch (lval.type) {
-						case valuetype::INT:
+						case ValueType::INT:
 							v.value.b = lval.value.i >= rval.value.i;
 							break;
-						case valuetype::FLOAT:
+						case ValueType::FLOAT:
 							v.value.b = lval.value.f >= rval.value.f;
 							break;
 						default:
@@ -365,13 +362,13 @@ void runtime::run(xclass* mainClass, std::string func) {
 				break;
 			}
 			case OP_NOT: {
-				xvalue b = stackPop();
+				xValue b = stackPop();
 
-				if (b.type != valuetype::BOOL)
+				if (b.type != ValueType::BOOL)
 					break;
 
-				xvalue r = xvalue();
-				r.type = valuetype::BOOL;
+				xValue r = xValue();
+				r.type = ValueType::BOOL;
 				r.value.b = !b.value.b;
 
 				stackPush(r);
@@ -379,25 +376,25 @@ void runtime::run(xclass* mainClass, std::string func) {
 			}
 			case OP_JIF: {
 				int pos = getArg();
-				xvalue b = stackPop();
+				xValue b = stackPop();
 
-				if (b.type != valuetype::BOOL)
+				if (b.type != ValueType::BOOL)
 					break;
 				if (b.value.b != true)
 					ptrs.top() += pos;
 				break;
 			}
 			case OP_NEWO: {
-				/*xclass* c = ((runtime*)rt)->getClass(advance());
-				object* o = (object*) allocate(sizeof(object));
+				/*xClass* c = ((Runtime*)rt)->getClass(advance());
+				Object* o = (Object*) allocate(sizeof(Object));
 
 				int scopeSize = c->getScopeSize();
 				o->classObj = c;
 				o->scopeSize = scopeSize;
-				o->obj = (xvalue**)allocate(sizeof(xvalue*) * scopeSize);
+				o->obj = (xValue**)allocate(sizeof(xValue*) * scopeSize);
 
-				xvalue* v = (xvalue*) allocate(sizeof(xvalue));
-				v->type = valuetype::OBJECT;
+				xValue* v = (xValue*) allocate(sizeof(xValue));
+				v->type = ValueType::OBJECT;
 				v->value.o = o;
 
 				stackPush(v);*/
@@ -405,47 +402,54 @@ void runtime::run(xclass* mainClass, std::string func) {
 			}
 			case OP_OLOAD: {
 				int i = advance();
-				xvalue o = getStackTop();
+				xValue o = getStackTop();
 
-				if (o.type != valuetype::OBJECT)
+				if (o.type != ValueType::OBJECT)
 					break;
 
-				stackPush(((object*)o.value.o)->obj[i]);
+				stackPush(((Object*)o.value.o)->obj[i]);
 				break;
 			}
 			case OP_OSTORE: {
 				int i = advance();
-				xvalue v = getStackTop();
-				xvalue o = getStackTop();
+				xValue v = getStackTop();
+				xValue o = getStackTop();
 
-				if (o.type != valuetype::OBJECT)
+				if (o.type != ValueType::OBJECT)
 					break;
 
-				// ((object*)o.value.b)->obj[i].value.o->refcount--;
-				((object*)o.value.b)->obj[i] = v;
+				// ((Object*)o.value.b)->obj[i].value.o->refcount--;
+				((Object&)o.value.b).obj[i] = v;
 				break;
 			}
 			case OP_INVO: {
-				/*xvalue* o = stack().front();
+				/*xValue* o = stack().front();
 
-				if (o->type != valuetype::OBJECT) break;
+				if (o->type != ValueType::OBJECT) break;
 
-				xclass* c = ((object*)o->value.o)->classObj;
+				xClass* c = ((Object*)o->value.o)->classObj;
 				setClass(c);*/
 
 				int idx = getArg();
-				xclass* c = classManager.getClass(idx);
+				xClass& c = classManager.getClass(idx);
 				setClass(c);
-				break;
 
+				debugPrint("INVOKE # on #\n", idx, ptrs.top());
+				break;
 			}
 			case OP_NEW: {
 				int idx = getArg();
 
-				xvalue r = xvalue();
-				r.type = valuetype::OBJECT;
+				xValue v = xValue();
+				v.type = ValueType::OBJECT;
 
-				xclass* c = classManager.getClass(idx);
+				xClass& c = classManager.getClass(idx);
+
+				Object& obj = getMemoryManager().allocate(c);
+
+				v.value.o = &obj;
+				stackPush(v);
+				break;
 			}
 			case OP_POP: {
 				int amount = advance();
@@ -458,7 +462,7 @@ void runtime::run(xclass* mainClass, std::string func) {
 			}
 			case OP_LOAD: {
 				int pos = getArg();
-				xvalue val = localScopes.top()[pos];
+				xValue val = localScopes.top()[pos];
 
 				debugPrint("LOAD # in # on #\n", val.value.i, pos, ptrs.top());
 
@@ -467,14 +471,22 @@ void runtime::run(xclass* mainClass, std::string func) {
 			}
 			case OP_STORE: {
 				int pos = getArg();
-				xvalue val = stackPop();
+				xValue val = stackPop();
 
 				debugPrint("STORE # at # on #\n", val.value.i, pos, ptrs.top());
 
 				// val->refcount++;
-				/*if (((runtime*)rt)->scope[pos] != nullptr)
-					((runtime*)rt)->scope[pos]->refcount--;*/
+				/*if (((Runtime*)rt)->scope[pos] != nullptr)
+					((Runtime*)rt)->scope[pos]->refcount--;*/
 				stack()[pos] = val;
+				break;
+			}
+			case OP_PUSHC: {
+				int idx = getArg();
+
+				xClass& c = classManager.getClass(idx);
+				debugPrint("PUSHC # on #", idx, ptrs.top());
+				stack().push_back(c.classObj);
 				break;
 			}
 			case OP_CLS: {
@@ -482,32 +494,45 @@ void runtime::run(xclass* mainClass, std::string func) {
 					stackPop();
 				break;
 			}
+			/*case OP_NEWA: {
+				int len = getArg();
+
+				xValue val{};
+
+				val.type == ValueType::OBJECT;
+				
+				Object& array = getMemoryManager().allocate();
+				array.obj = new xValue[len];
+
+				val.value.o = static_cast<xobject>(&array);
+				break;
+			}
+			case OP_ASTORE: {
+				int idx = getArg();
+				xValue arr = stackPop();
+				xValue val = stackPop();
+
+				if (idx == -1)
+					idx = stackPop().value.i;
+
+				Object& obj = (Object&) arr.value.o;
+				obj.obj[1 + idx] = val;
+				break;
+			}
+			case OP_ALOAD: {
+				int idx = getArg();
+				xValue arr = stackPop();
+
+				if (idx == -1)
+					idx = stackPop().value.i;
+
+				Object* o = (Object*)arr.value.o;
+				stackPush(o->obj[1 + idx]);
+				break;
+			}*/
 			case 0:
 				_isHalted = true;
 				break;
-#ifdef _DEBUG
-			case OP_OUT: {
-				std::cout << "out ";
-
-				xvalue& v = getStackTop();
-
-				if (v.type == valuetype::INT)
-					std::cout << v.value.i;
-				else if (v.type == valuetype::FLOAT)
-					std::cout << v.value.f;
-				else if (v.type == valuetype::CHAR)
-					std::cout << v.value.c;
-				else if (v.type == valuetype::BOOL)
-					if (v.value.b == true)
-						std::cout << "true";
-					else if (v.value.b == false)
-						std::cout << "false";
-					else
-						std::cout << "hi";
-				std::cout << "\n";
-				break;
-			}
-#endif
 			default:
 				unsigned char inst = bytes[ptrs.top()];
 				std::cout << "Unknown opcode: " << inst << "\n";
@@ -519,34 +544,34 @@ void runtime::run(xclass* mainClass, std::string func) {
 	_isHalted = true;
 }
 
-XRT_Error runtime::getError() {
+XRT_Error Runtime::getError() {
 	return currentError;
 }
 
-void runtime::setError(XRT_Error error) {
+void Runtime::setError(XRT_Error error) {
 	this->currentError = error;
 }
 
-std::string runtime::getException() {
+std::string Runtime::getException() {
 	return this->exception;
 }
 
-void runtime::halt() {
+void Runtime::halt() {
 	_isHalted = true;
 }
 
-void runtime::putNativeFunction(std::string signature, void (*fn)(void*)) {
+void Runtime::putNativeFunction(std::string signature, void (*fn)(void*)) {
 	nativeFunctions.insert(
 			std::pair<std::string, void(_xcdecl*)(void*)>(signature, fn));
 }
 
-void runtime::setClass(xclass* c) {
-	classes.push(c);
-	currentClass = c;
+void Runtime::setClass(xClass& c) {
+	classes.push(&c);
+	currentClass = &c;
 }
 
-void runtime::callFunction(int id) {
-	functioninfo info = functionmap.getFunction(id);
+void Runtime::callFunction(int id) {
+	FunctionInfo info = functionmap.getFunction(id);
 	std::string signature = info.signature;
 
 	if (nativeFunctions.contains(signature)) {
@@ -572,21 +597,21 @@ void runtime::callFunction(int id) {
 	}
 }
 
-xvalue& runtime::getStackTop() {
+xValue& Runtime::getStackTop() {
 	return stack().back();
 }
 
-void runtime::stackPush(xvalue v) {
+void Runtime::stackPush(xValue v) {
 	stack().push_back(v);
 }
 
-xvalue runtime::stackPop() {
-	auto v = getStackTop();
+xValue Runtime::stackPop() {
+	auto& v = getStackTop();
 	stack().pop_back();
 	return v;
 }
 
-std::string runtime::createCallStack() {
+std::string Runtime::createCallStack() {
 	std::string str = "";
 
 	for (auto it = functionCallVector.rbegin(); it != functionCallVector.rend();
@@ -597,7 +622,7 @@ std::string runtime::createCallStack() {
 	return str;
 }
 
-std::string runtime::createExceptionMessage(std::string msg) {
+std::string Runtime::createExceptionMessage(std::string msg) {
 	bool isEmpty = msg.empty();
 
 	if (!isEmpty) {
@@ -616,22 +641,22 @@ std::string runtime::createExceptionMessage(std::string msg) {
 	return "Xouver Exception: " + msg + '\n' + createCallStack();
 }
 
-void runtime::throwError(std::string msg) {
+void Runtime::throwError(std::string msg) {
 	this->exception = createExceptionMessage(msg);
 
 	setError(XRT_Error::EXCEPTION_THROWN);
 	haltRuntime(this);
 }
 
-classmanager* runtime::getClassManager() {
-	return &this->classManager;
+ClassManager& Runtime::getClassManager() {
+	return classManager;
 }
 
-memorymanager& runtime::getMemoryManager() {
+MemoryManager& Runtime::getMemoryManager() {
 	return memManager;
 }
 
-unsigned char runtime::advance() {
+unsigned char Runtime::advance() {
 	int ptr = ptrs.top() + 1;
 	ptrs.pop();
 	ptrs.push(ptr);
@@ -640,7 +665,7 @@ unsigned char runtime::advance() {
 	return bytes[ptr];
 }
 
-int runtime::getArg() {
+int Runtime::getArg() {
 	advance();
 	int arg = BYTE_INT(bytes, &ptrs.top());
 
@@ -648,10 +673,10 @@ int runtime::getArg() {
 	return arg;
 }
 
-runtime::Stack& runtime::stack() {
+Runtime::Stack& Runtime::stack() {
 	return this->localScopes.top();
 }
 
-std::stack<runtime::Stack>& runtime::fullStack() {
+std::stack<Runtime::Stack>& Runtime::fullStack() {
 	return this->localScopes;
 }
