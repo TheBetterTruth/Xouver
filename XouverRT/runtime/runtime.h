@@ -61,6 +61,7 @@ class Runtime {
 	void putNativeFunction(std::string signature, void (*fn)(void*));
 	void setClass(xClass& c);
 	void callFunction(int id);
+	void callFunction(std::string signature);
 	void halt();
 	std::string createCallStack();
 	std::string createExceptionMessage(std::string msg);

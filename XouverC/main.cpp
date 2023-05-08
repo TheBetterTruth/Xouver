@@ -23,9 +23,10 @@ int main() {
 		std::vector<std::unique_ptr<const ASTExpr>> exprs = parse(&tokens);
 		
 		std::vector<unsigned char> cls;
+		classes.push_back(std::make_unique<Class>("Test", "Xouver.Test", exprs));
 
-		Class c("Test", "Xouver.Test", exprs);
-
+		Class& c = *classes[0];
+		_currentClass = &c;
 		std::vector<unsigned char> content;
 		c.gen(content);
 

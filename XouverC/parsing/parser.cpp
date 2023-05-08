@@ -20,7 +20,8 @@ std::unique_ptr<const ASTExpr> parseExpr();
 
 
 std::unique_ptr<const ASTExpr> parseIdent() {
-	auto ident = std::make_unique<ASTIdent>(token().line, static_cast<const SToken&>(token()).value);
+	const SToken& tok = static_cast<const SToken&>(token());
+	auto ident = std::make_unique<ASTIdent>(token().line, tok.value);
 	next();
 
 	return ident;
@@ -182,7 +183,18 @@ std::unique_ptr<const ASTExpr> parseBin() {
 
 	return left;
 }
+std::unique_ptr<const ASTExpr> parseAssign() {
+	auto left = parseBin();
 
+	if (token().type == TokenType::T_ASSIGN) {
+		next();
+		auto right = parseBin();
+
+		left = std::make_unique<ASTAssign>(left->line, left, right);
+	}
+
+	return left;
+}
 std::unique_ptr<const ASTExpr> parseExpr() {
 	if (token().type == TokenType::T_LBRACE) {
 		const unsigned int& line = token().line;
@@ -197,7 +209,7 @@ std::unique_ptr<const ASTExpr> parseExpr() {
 
 		return std::make_unique<ASTBlock>(line, exprs);
 	}
-	else return parseBin();
+	else return parseAssign();
 }
 std::unique_ptr<const ASTExpr> parseField(unsigned const int& line) {
 	next();
@@ -227,7 +239,7 @@ std::unique_ptr<const ASTExpr> parseFunc(unsigned const int& line) {
 			params.push_back(std::move(param));
 
 			if (token().type == TokenType::T_COMMA)
-				continue;
+				next();
 			else if (token().type == TokenType::T_RPAREN)
 				break;
 			else throw InvalidTokenException(token());

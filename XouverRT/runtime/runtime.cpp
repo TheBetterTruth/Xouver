@@ -28,7 +28,7 @@ Runtime::~Runtime() {
 void Runtime::run(xClass& mainClass, std::string func) {
 	_isHalted = false;
 	setClass(mainClass);
-	callFunction(0);
+	callFunction(func);
 
 	while (!_isHalted) {
 		unsigned char inst = advance();
@@ -259,9 +259,22 @@ void Runtime::run(xClass& mainClass, std::string func) {
 				callFunction(funcPtr);
 				break;
 			}
-			case OP_RET: {
+			case OP_RET0: {
 				ptrs.pop();
 				functionCallVector.pop_back();
+				localScopes.pop();
+
+				if (ptrs.size() == 0)
+					_isHalted = true;
+				break;
+			}
+			case OP_RET1: {
+				ptrs.pop();
+				functionCallVector.pop_back();
+				
+				xValue ret = stackPop();
+				localScopes.pop();
+				stackPush(ret);
 
 				if (ptrs.size() == 0)
 					_isHalted = true;
@@ -588,6 +601,31 @@ void Runtime::callFunction(int id) {
 
 		int argsCount = BYTE_INT(bytes, &ptr);
 		for (int i = argsCount - 1; i >= 0; i--) {
+			scope[i] = stackPop();
+		}
+		ptrs.push(ptr - 1);
+
+		localScopes.push(scope);
+	}
+}
+
+void Runtime::callFunction(std::string signature) {
+	if (nativeFunctions.contains(signature)) {
+		this->functionCallVector.push_back(signature.c_str());
+		nativeFunctions[signature](this);
+		this->functionCallVector.pop_back();
+	}
+	else {
+		FunctionInfo info = functionmap.getFunction(signature);
+		this->functionCallVector.push_back(signature.c_str());
+
+		int ptr = currentClass->funcsOffset + info.pointer;
+		Stack scope;
+		int scopeSize = BYTE_INT(bytes, &ptr);
+		scope = Stack{ (std::size_t)scopeSize };
+
+		int argsCount = BYTE_INT(bytes, &ptr);
+		for (int i = argsCount - 1; i >= 0; i--) {
 			scope[i] = stack().back();
 			stack().pop_back();
 		}
@@ -596,6 +634,7 @@ void Runtime::callFunction(int id) {
 		localScopes.push(scope);
 	}
 }
+
 
 xValue& Runtime::getStackTop() {
 	return stack().back();

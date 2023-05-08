@@ -22,6 +22,7 @@ enum ASTType {
 	A_CALL,
 	A_ARRAY,
 	A_VAR,
+	A_ASSIGN,
 	A_IDENT,
 	A_DEF,
 	A_FUNC,
@@ -133,6 +134,7 @@ struct ASTBlock : ASTExpr {
 
 		return ss.str();
 	}
+	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
 
 struct ASTIdent : ASTExpr {
@@ -143,6 +145,7 @@ struct ASTIdent : ASTExpr {
 	const std::string string() const override {
 		return value;
 	}
+	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
 struct ASTAccess : ASTExpr{
 	const std::unique_ptr<const ASTExpr> left;
@@ -177,6 +180,7 @@ struct ASTCall : ASTExpr {
 
 		return ss.str();
 	}
+	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
 struct ASTArray : ASTExpr {
 	const std::unique_ptr<const ASTExpr> arr;
@@ -203,6 +207,20 @@ struct ASTVar : ASTExpr {
 
 		return ss.str();
 	}
+};
+struct ASTAssign : ASTExpr {
+	const std::unique_ptr<const ASTExpr> dest;
+	const std::unique_ptr<const ASTExpr> value;
+
+	ASTAssign(const unsigned int& line, std::unique_ptr<const ASTExpr>& dest, std::unique_ptr<const ASTExpr>& value) :
+		ASTExpr(ASTType::A_ASSIGN, line), dest(std::move(dest)), value(std::move(value)) {}
+	const std::string string() const override {
+		std::stringstream ss;
+		ss << dest->string() << " = " << value->string();
+
+		return ss.str();
+	}
+	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
 
 struct ASTDef : ASTExpr {

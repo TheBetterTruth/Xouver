@@ -7,7 +7,6 @@
 #include "type.h"
 #include "common.h"
 
-Scope::Scope(IScope& parent) : parent(parent) {}
 Scope::Scope(IScope& parent, const std::vector<Var>& vars) : parent(parent) {
 	for (auto& var : vars)
 		this->vars.push_back(var);
@@ -25,26 +24,50 @@ const void Scope::get(const std::string& name, std::vector<unsigned char>& out) 
 		if (var.name == name) {
 			out.push_back(OP_LOAD);
 			write_bytes(&var.ptr, sizeof(var.ptr), out);
+			return;
 		}
 	}
+
+	parent.get(name, out);
 }
 const void Scope::put(const Type type, const std::string& name, std::vector<unsigned char>& out) {
-	Var var(type, name, ptr());
-	vars.push_back(var);
+	if (has(name)) {
+		out.push_back(OP_STORE);
 
-	out.push_back(OP_STORE);
-	write_bytes(&var.ptr, sizeof(var.ptr), out);
+		for (auto& v : vars)
+			if (v.name == name)
+				if (v.type == type)
+					write_bytes(&v.ptr, sizeof(v.ptr), out);
+				else
+					throw std::exception();
+	}
+	else {
+		Var var(type, name, ptr());
+		vars.push_back(var);
+
+		out.push_back(OP_STORE);
+		write_bytes(&var.ptr, sizeof(var.ptr), out);
+		parent.advance();
+	}
 }
 const void Scope::getConst(const int& value, std::vector<unsigned char>& out) {
 	return parent.getConst(value, out);
 }
-const Type& Scope::typeOf(const std::string& name) const {
+const Type Scope::typeOf(const std::string& name) const {
 	for (auto var : vars)
 		if (var.name == name)
 			return var.type;
 
 	return parent.typeOf(name);
 }
-inline const unsigned int Scope::ptr() const {
+const unsigned int Scope::ptr() const {
 	return parent.ptr();
+}
+
+const void Scope::advance() {
+	parent.advance();
+}
+
+const void Scope::call(const std::string& name, const std::vector<Type>& paramTypes, std::vector<unsigned char>& out) const {
+	parent.call(name, paramTypes, out);
 }

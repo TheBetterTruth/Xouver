@@ -6,6 +6,7 @@
 #include "parsing/ast.h"
 
 std::vector<std::string> types;
+Class* _currentClass;
 const Type null("null");
 
 bool match(const std::string src, const char _char) {
@@ -57,4 +58,25 @@ const Type type_from(const std::unique_ptr<const ASTExpr>& expr) {
 		tname = "Xouver.String";
 
 	return Type(tname);
+}
+
+const Type type_of(IScope& scope, const std::unique_ptr<const ASTExpr>& expr) {
+	if (expr->type == ASTType::A_INT)
+		return Type("Xouver.Integer");
+	else if (expr->type == ASTType::A_FLOAT)
+		return Type("Xouver.Float");
+	else if (expr->type == ASTType::A_CHAR)
+		return Type("Xouver.Char");
+	else if (expr->type == ASTType::A_BOOL)
+		return Type("Xouver.Bool");
+	else if (expr->type == ASTType::A_STRING)
+		return Type("Xouver.String");
+	else if (expr->type == ASTType::A_IDENT)
+		return scope.typeOf(static_cast<const ASTIdent*>(expr.get())->value);
+	else if (expr->type == ASTType::A_BINARY)
+		return type_of(scope, static_cast<const ASTBinary*>(expr.get())->lval);
+}
+
+const Class& currentClass() {
+	return *_currentClass;
 }

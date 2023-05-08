@@ -12,6 +12,8 @@
 #include "common.h"
 #include "constant.h"
 
+std::vector<std::unique_ptr<Class>> classes;
+
 Class::Class(const std::string& name, const std::string& fullName, const std::vector<std::unique_ptr<const ASTExpr>>& exprs) : _name(name), _fullName(fullName) {
 	for (auto& expr : exprs) {
 		if (expr->type == ASTType::A_FUNC) {
@@ -59,12 +61,16 @@ Class::Class(const std::string& name, const std::string& fullName, const std::ve
 const void Class::gen(std::vector<unsigned char>& out) {
 	for (auto& func : functions) {
 		FuncScope scope(*this, func->params);
-		
+
 		std::vector<unsigned char> code;
 		func->ptr = out.size();
-		func->expr->gen(*this, code);
+		func->expr->gen(scope, code);
 
-		code.push_back(OP_RET);
+		if (func->type.name == "void")
+			code.push_back(OP_RET0);
+		else
+			code.push_back(OP_RET1);
+
 		unsigned int scopeSize = scope.ptr();
 		write_bytes(&scopeSize, sizeof(scopeSize), out);
 
@@ -86,7 +92,7 @@ const void Class::get(const std::string& name, std::vector<unsigned char>& out) 
 	for (auto& field : fields)
 		if (field.name == name) {
 			out.push_back(OP_OLOAD);
-			out.push_back(field.ptr);
+			write_bytes(&field.ptr, sizeof(&field.ptr), out);
 		}
 
 	throw std::exception();
@@ -108,7 +114,7 @@ const void Class::getConst(const int& value, std::vector<unsigned char>& out) {
 
 	write_bytes(&p, sizeof(p), out);
 }
-const Type& Class::typeOf(const std::string& name) const {
+const Type Class::typeOf(const std::string& name) const {
 	for (auto& field : fields)
 		if (field.name == name)
 			return field.type;
@@ -130,7 +136,23 @@ const Function& Class::getFunc(unsigned int ptr) const {
 const std::vector<Constant>& Class::constants() const {
 	return _constants;
 }
+const void Class::call(const std::string& name, const std::vector<Type>& paramTypes, std::vector<unsigned char>& out) const {
+	for (auto& f : functions) {
+		if (f->name == name && f->params.size() == paramTypes.size()) {
+			bool match = true;
 
+			for (int i = 0; i < paramTypes.size(); i++)
+				if (paramTypes[i].name != f->params[i].type) {
+					match = false;
+					break;
+				}
+			if (!match) continue;
+
+			out.push_back(OP_CALL);
+			write_bytes(&f->ptr, sizeof(f->ptr), out);
+		}
+	}
+}
 const std::string& Class::name() const {
 	return _name;
 }
