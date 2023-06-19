@@ -12,6 +12,7 @@ public:
 	virtual const void put(const Type type, const std::string& name, std::vector<unsigned char>& out) {}
 	virtual const void getConst(const int& value, std::vector<unsigned char>& out) {}
 	virtual const Type typeOf(const std::string& name) const { return null; }
+	virtual const Type typeOf(const std::string& name, const std::vector<Type>& paramTypes) const { return null; }
 	virtual const unsigned int ptr() const { return 0; }
 	virtual const void advance() {}
 	virtual const void call(const std::string& name, const std::vector<Type>& paramTypes, std::vector<unsigned char>& out) const {}

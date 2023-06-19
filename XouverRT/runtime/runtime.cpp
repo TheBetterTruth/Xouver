@@ -591,7 +591,8 @@ void Runtime::callFunction(int id) {
 		this->functionCallVector.push_back(signature.c_str());
 		nativeFunctions[signature](this);
 		this->functionCallVector.pop_back();
-	} else {
+	}
+	else {
 		this->functionCallVector.push_back(signature.c_str());
 
 		int ptr = currentClass->funcsOffset + info.pointer;
@@ -603,7 +604,7 @@ void Runtime::callFunction(int id) {
 		for (int i = argsCount - 1; i >= 0; i--) {
 			scope[i] = stackPop();
 		}
-		ptrs.push(ptr - 1);
+		ptrs.push(ptr-1);
 
 		localScopes.push(scope);
 	}
@@ -626,10 +627,9 @@ void Runtime::callFunction(std::string signature) {
 
 		int argsCount = BYTE_INT(bytes, &ptr);
 		for (int i = argsCount - 1; i >= 0; i--) {
-			scope[i] = stack().back();
-			stack().pop_back();
+			scope[i] = stackPop();
 		}
-		ptrs.push(ptr - 1);
+		ptrs.push(ptr-1);
 
 		localScopes.push(scope);
 	}

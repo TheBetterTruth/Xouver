@@ -8,13 +8,12 @@ extern std::vector<std::string> types;
 
 struct Type {
 	const std::string name;
-	Type(const std::string& name) : name(name) {}
-	Type(const Type& src) : name(src.name) {}
+	const bool array;
+	Type(const std::string& name, const bool array) : name(name), array(array) {}
+	Type(const Type& src) : name(src.name), array(src.array) {}
 
-	const Type operator=(const Type& src) { return Type(src.name); }
 	const bool operator==(const Type t) const {
-		if (t.name == name) return true;
-		return false;
+		return (t.name == name && t.array == array);
 	}
 };
 

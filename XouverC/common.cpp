@@ -75,6 +75,23 @@ const Type type_of(IScope& scope, const std::unique_ptr<const ASTExpr>& expr) {
 		return scope.typeOf(static_cast<const ASTIdent*>(expr.get())->value);
 	else if (expr->type == ASTType::A_BINARY)
 		return type_of(scope, static_cast<const ASTBinary*>(expr.get())->lval);
+	else if (expr->type == ASTType::A_CALL) {
+		const ASTCall* call = static_cast<const ASTCall*>(expr.get());
+
+		std::vector<Type> types;
+		for (auto& t : call->args)
+			types.push_back(type_of(scope, t));
+
+		std::string name = static_cast<const ASTIdent*>(call->callee.get())->value;
+		return scope.typeOf(name, types);
+	}
+	else if (expr->type == ASTType::A_ARRAY) {
+		const ASTArray* arr = static_cast<const ASTArray*>(expr.get());
+
+		if (arr->index) {
+			Type t = type_of(scope, expr);
+		}
+	}
 }
 
 const Class& currentClass() {

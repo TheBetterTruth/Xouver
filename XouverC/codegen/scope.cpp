@@ -60,6 +60,11 @@ const Type Scope::typeOf(const std::string& name) const {
 
 	return parent.typeOf(name);
 }
+
+const Type Scope::typeOf(const std::string& name, const std::vector<Type>& paramTypes) const {
+	return parent.typeOf(name, paramTypes);
+}
+
 const unsigned int Scope::ptr() const {
 	return parent.ptr();
 }

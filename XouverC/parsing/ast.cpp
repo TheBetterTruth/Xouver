@@ -74,3 +74,9 @@ const void ASTFunc::gen(IScope& scope, std::vector<unsigned char>& out) const {
 			e->gen(scope, out);
 	else expr->gen(scope, out);
 }
+
+const void ASTNew::gen(IScope& scope, std::vector<unsigned char>& out) const {
+	if (expr->type == ASTType::A_ARRAY) {
+
+	}
+}

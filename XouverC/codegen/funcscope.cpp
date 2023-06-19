@@ -29,6 +29,10 @@ const Type FuncScope::typeOf(const std::string& name) const {
 
 	return classScope.typeOf(name);
 }
+const Type FuncScope::typeOf(const std::string& name, const std::vector<Type>& paramTypes) const {
+	return classScope.typeOf(name, paramTypes);
+}
+
 const unsigned int FuncScope::ptr() const {
 	return vars;
 }

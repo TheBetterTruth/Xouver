@@ -121,6 +121,27 @@ const Type Class::typeOf(const std::string& name) const {
 
 	throw std::exception();
 }
+const Type Class::typeOf(const std::string& name, const std::vector<Type>& paramTypes) const {
+	for (auto& func : functions) {
+		if (func->name == name) {
+			if (func->params.size() == paramTypes.size()) {
+				bool keep = true;
+
+				for (int i = 0; i < paramTypes.size(); i++) {
+					if (paramTypes[i] != func->params[i].type) {
+						keep = false;
+						break;
+					}
+				}
+
+				if (keep)
+					return func->type;
+			}
+		}
+	}
+
+	throw std::exception();
+}
 const unsigned int Class::ptr() const {
 	return fields.size();
 }

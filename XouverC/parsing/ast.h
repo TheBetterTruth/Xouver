@@ -26,6 +26,7 @@ enum ASTType {
 	A_IDENT,
 	A_DEF,
 	A_FUNC,
+	A_NEW
 };
 
 struct ASTExpr {
@@ -222,7 +223,6 @@ struct ASTAssign : ASTExpr {
 	}
 	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
-
 struct ASTDef : ASTExpr {
 	const std::unique_ptr<const ASTExpr> expr;
 
@@ -257,6 +257,13 @@ struct ASTFunc : ASTExpr {
 
 		return ss.str();
 	}
+	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
+};
+struct ASTNew : ASTExpr {
+	const std::unique_ptr<const ASTExpr> expr;
+
+	ASTNew(const unsigned int& line, std::unique_ptr<const ASTExpr>& expr) :
+		ASTExpr(ASTType::A_NEW, line), expr(std::move(expr)) {}
 	const void gen(IScope& scope, std::vector<unsigned char>& out) const override;
 };
 #endif
