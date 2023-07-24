@@ -1,9 +1,0 @@
-{
-  "configurations": [
-    {
-      "name": "default",
-      "addressSanitizerEnabled": true,
-      "intellisenseOptions": []
-    }
-  ]
-}
