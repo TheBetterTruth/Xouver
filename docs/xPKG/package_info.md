@@ -25,7 +25,7 @@ If loaded via [xpkg_get_package] this struct represents the given ``unsigned cha
 |Type|Name|Description|
 |----|----|-----------|
 |unsigned char|minor_version|The minor vm version the bytecode has been compiled for.|
-|unsigned char|The major vm version the bytecode has been compiled for.|
+|unsigned char|major_version|The major vm version the bytecode has been compiled for.|
 |unsigned char|package_type|The type of this package.<br><br>**0** - This package should be treated as executable.<br>**1** - This package should e treated as library (Must have descriptors).|
 |uint64_t|handle|The address of the `` unsigned char`` bytecode array of this package.<br><br>**Note** If this instance is used to __create__ bytecode from a package, then the handle be used. Otherwise the array may __**NOT**__ be deleted and or free'd *before* this package won't be worked with anymore.|
 |uint32_t|class_count|The amount of classes in this package.|
