@@ -1,6 +1,15 @@
 cmake_minimum_required (VERSION 3.0)
 
-set (xpkgsrc "xpkg.cpp" "xpkg.h")
+include (CheckTypeSize)
+check_type_size ("int" INT)
+
+if (HAS_INT)
+if (INT == 4)
+
+endif()
+endif()
+
+set (xpkgsrc "xpkg.cpp" "xpkg.h" "helpers.h" "codes.h")
 add_executable (xpkg "main.cpp" ${xpkgsrc})
 add_library (xpkg-obj OBJECT ${xpkgsrc})
 

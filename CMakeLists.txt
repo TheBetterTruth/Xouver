@@ -2,4 +2,5 @@
 
 project ("Xouver")
 
+include_directories(Xouver PUBLIC "Common")
 add_subdirectory ("xPKG")
