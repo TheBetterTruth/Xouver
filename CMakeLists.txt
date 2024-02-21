@@ -1,6 +1,7 @@
-﻿cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required(VERSION 3.27)
 
-project ("Xouver")
+project("Xouver")
 
-include_directories(Xouver PUBLIC "Common")
-add_subdirectory ("xPKG")
+add_subdirectory(XPKG)
+add_subdirectory(XRT)
+add_subdirectory(XouverC)

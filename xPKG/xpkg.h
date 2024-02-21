@@ -2,70 +2,56 @@
 #define XPKG_H
 
 #include <stdint.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <streambuf>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	const extern unsigned char xpkg_minor_version;
-	const extern unsigned char xpkg_major_version;
+class xpkg_bytecode_stream {
+private:
+	std::streambuf* buffer;
+	unsigned int ptr;
+public:
+	xpkg_bytecode_stream(std::streambuf* _Buffer);
+	void write_byte(unsigned char _Byte);
+	void write_double(double _Value);
+	unsigned char read_byte();
+	double read_double();
+	unsigned int pointer();
+};
 
-	typedef struct {
-		unsigned char opcode;
-		unsigned char arg_count;
-		uint16_t* args;
-	} instruction;
+struct xpkg_symbol {
+	std::string name;
+	std::string symbol_type;
+	std::string type;
+	std::string base_type;					// Only used by classes
+	std::vector<std::string> parameters;
+	unsigned int line_number;
+};
 
-	typedef struct {
-		unsigned char param_count;
-		uint16_t scope_size;
+class xpkg_symbol_table {
+private:
+	std::unordered_map<std::string, xpkg_symbol> table;
+public:
+	xpkg_symbol_table();
+	void insert(xpkg_symbol& _Symbol);
+	xpkg_symbol* lookup(std::string& _Name, std::vector<std::string> _Params = {});
+	void erase(std::string& _Name);
+};
 
-		uint16_t instruction_count;
-		instruction* instructions;
-	} function_info;
 
-	typedef struct {
-		unsigned char type;
-		uint32_t size;
-		unsigned char* bytes;
-	} constant_info;
+struct xpkg_constant {
+	enum constant_type {
+		CONST_NUM,
+		CONST_BOOL,
+		CONST_CHAR,
+		CONST_STRING,
+		CONST_IDENT
+	} type;
+	std::string value;
+};
 
-	typedef struct {
-		uint64_t package;
-		char* class_name;
-		char* class_path;
 
-		uint16_t pool_size;
-		uint64_t pool_ptr;
 
-		uint16_t field_count;
-
-		uint16_t function_count;
-		char** function_signatures;
-		uint64_t* function_ptrs;
-	} class_info;
-
-	typedef struct {
-		unsigned char minor_version;
-		unsigned char major_version;
-
-		unsigned char package_type;
-
-		uint64_t handle;
-
-		uint32_t class_count;
-
-		char** class_names;
-		uint64_t* class_ptrs;
-	} package_info;
-
-	unsigned char xpkg_get_package(const unsigned char* _Bytes, package_info* _PackageInfo);
-	unsigned char xpkg_get_class(const package_info* _PackageInfo, const uint32_t _Index, class_info* _ClassInfo);
-	unsigned char xpkg_find_class(const package_info* _PackageInfo, const char* _ClassName, uint32_t* _ClassIndex);
-	unsigned char xpkg_get_constant(const class_info* _ClassInfo, const uint16_t _Index, constant_info* _ConstantInfo);
-	unsigned char xpkg_get_function(const class_info* _ClassInfo, const uint16_t _Index, function_info* _FunctionInfo);
-	unsigned char xpkg_find_function(const class_info* _ClassInfo, const char* _Signature, uint32_t* _FunctionIndex);
-#ifdef __cplusplus
-}
-#endif
 
 #endif
